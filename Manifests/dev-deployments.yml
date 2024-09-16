@@ -47,7 +47,7 @@ spec:
       serviceAccountName: dev-sa
       containers:
         - name: yelp-camp-container
-          image: praks007/yelp-camp-prod:latest
+          image: praks007/yelp-camp-dev:latest
           ports:
             - containerPort: 3000
           env:
