@@ -58,7 +58,7 @@ pipeline {
                     // Verify that the deployment is successful
                     sh '''
                     kubectl get pods --namespace=prod
-                    kubectl get svc --namespace=pord
+                    kubectl get svc --namespace=prod
                     '''
                 }
             }
