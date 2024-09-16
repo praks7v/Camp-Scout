@@ -47,7 +47,7 @@ resource "google_service_account" "kubernetes_dev" {
 }
 
 resource "google_container_node_pool" "dev" {
-  name       = "general"
+  name       = "dev"
   project    = var.project_id
   cluster    = google_container_cluster.dev.id
   node_count = 1
@@ -66,7 +66,7 @@ resource "google_container_node_pool" "dev" {
     machine_type = "e2-medium"
 
     labels = {
-      role = "general"
+      role = "dev"
     }
 
     service_account = google_service_account.kubernetes_dev.email
@@ -81,8 +81,9 @@ resource "google_service_account" "dev_sa" {
   project    = var.project_id
 }
 
-resource "google_service_account_iam_member" "dev_sa" {
-  service_account_id = google_service_account.dev_sa.id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.project_id}.svc.id.goog[dev/dev_sa]"
-}
+# resource "google_service_account_iam_member" "dev_sa" {
+#   service_account_id = google_service_account.dev_sa.id
+#   role               = "roles/iam.workloadIdentityUser"
+#   member             = "serviceAccount:${var.project_id}.svc.id.goog[dev/dev_sa]"
+# }
+

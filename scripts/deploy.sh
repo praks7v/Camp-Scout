@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run Terraform to create infrastructure
-cd ../terraform
+cd ../terraform-gcp
 terraform init
 terraform apply -auto-approve
 
