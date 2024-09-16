@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Install Packegaes and configure vm
+  hosts: all
   become: true
   tasks:
     - name: Ensure all hosts are reachable
@@ -53,3 +54,5 @@
     - docker
 
 - import_playbook: sonarqube.yml
+- import_playbook: gcloud.yml
+- import_playbook: kubectl.yml

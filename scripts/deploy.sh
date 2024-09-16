@@ -2,8 +2,8 @@
 
 # Run Terraform to create infrastructure
 cd ../terraform-gcp/environments/dev
-terraform init
-terraform apply -auto-approve
+#terraform init
+#terraform apply -auto-approve
 
 # Export Terraform output to JSON
 terraform output -json > ../../../ansible/inventory/terraform_output.json

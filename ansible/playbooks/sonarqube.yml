@@ -5,10 +5,6 @@
   vars_files:
     - vars/sonarqube.yml
   tasks:
-    - name: Debug SonarQube variables
-      debug:
-        msg: "Image: {{ sonarqube_image }}, Tag: {{ sonarqube_image_tag }}, Host Port: {{ sonarqube_host_port }}, Container Port: {{ sonarqube_container_port }}"
-
     - name: Pull SonarQube Docker image
       docker_image:
         name: "{{ sonarqube_image }}:{{ sonarqube_image_tag }}"
