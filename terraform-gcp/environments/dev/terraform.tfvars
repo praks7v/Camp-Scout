@@ -26,11 +26,5 @@ vm_instances = [
     machine_type = "e2-medium"
     zone         = "asia-south1-a"
     disk_size    = 15
-  },
-  {
-    name         = "app-vm"
-    machine_type = "e2-medium"
-    zone         = "asia-south1-a"
-    disk_size    = 20
   }
 ]

@@ -23,7 +23,7 @@ data:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: dev-service-account
+  name: dev-sa
   namespace: dev
   annotations:
     iam.gke.io/gcp-service-account: dev-sa@praks-dev.iam.gserviceaccount.com

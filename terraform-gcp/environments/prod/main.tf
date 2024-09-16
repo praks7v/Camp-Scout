@@ -10,9 +10,9 @@ module "network" {
 }
 
 # VPC Subnet
-resource "google_compute_subnetwork" "subnetwork" {
+resource "google_compute_subnetwork" "dev_subnet" {
   project       = var.project_id
-  name          = "prod-private-subnet"
+  name          = "gke-dev-subnet"
   ip_cidr_range = "30.0.0.0/16"
   region        = var.region
   network       = module.network.network_name
@@ -20,21 +20,40 @@ resource "google_compute_subnetwork" "subnetwork" {
   private_ip_google_access = false
 
   secondary_ip_range {
-    range_name    = "k8s-pod-range"
+    range_name    = "dev-pod-range"
     ip_cidr_range = "30.2.0.0/16"
   }
   secondary_ip_range {
-    range_name    = "k8s-service-range"
+    range_name    = "dev-service-range"
     ip_cidr_range = "30.4.0.0/20"
   }
 }
 
-resource "google_compute_router" "router" {
-  project = var.project_id
-  name    = "router"
-  region  = var.region
-  network = module.network.network_name
+resource "google_compute_subnetwork" "prod_subnet" {
+  project       = var.project_id
+  name          = "gke-prod-subnet"
+  ip_cidr_range = "40.0.0.0/16"
+  region        = var.region
+  network       = module.network.network_name
+
+  private_ip_google_access = false
+
+  secondary_ip_range {
+    range_name    = "prod-pod-range"
+    ip_cidr_range = "40.2.0.0/16"
+  }
+  secondary_ip_range {
+    range_name    = "prod-service-range"
+    ip_cidr_range = "40.4.0.0/20"
+  }
 }
+
+# resource "google_compute_router" "router" {
+#   project = var.project_id
+#   name    = "router"
+#   region  = var.region
+#   network = module.network.network_name
+# }
 
 # resource "google_compute_router_nat" "nat_gw" {
 #   name    = "nat-gw"

@@ -45,7 +45,7 @@
         state: restarted
 
 - name: Install Docker on Ubuntu
-  hosts: app-vm, sonarqube-vm
+  hosts: sonarqube-vm
   gather_facts: yes
   become: yes
 

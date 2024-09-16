@@ -7,7 +7,7 @@ resource "google_container_cluster" "dev" {
   deletion_protection      = false
   initial_node_count       = 1
   network                  = module.network.network_name
-  subnetwork               = google_compute_subnetwork.subnetwork.self_link
+  subnetwork               = google_compute_subnetwork.dev_subnet.self_link
   # logging_service          = "logging.googleapis.com/kubernetes"
   # monitoring_service       = "monitoring.googleapis.com/kubernetes"
   networking_mode = "VPC_NATIVE"
@@ -30,8 +30,8 @@ resource "google_container_cluster" "dev" {
   }
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = "k8s-pod-range"
-    services_secondary_range_name = "k8s-service-range"
+    cluster_secondary_range_name  = "dev-pod-range"
+    services_secondary_range_name = "dev-service-range"
   }
 
   private_cluster_config {
@@ -58,12 +58,14 @@ resource "google_container_node_pool" "dev" {
   }
   autoscaling {
     min_node_count = 1
-    max_node_count = 6
+    max_node_count = 3
   }
 
   node_config {
     preemptible  = false
     machine_type = "e2-medium"
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
 
     labels = {
       role = "dev"

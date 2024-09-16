@@ -7,7 +7,7 @@ resource "google_container_cluster" "prod" {
   deletion_protection      = false
   initial_node_count       = 1
   network                  = module.network.network_name
-  subnetwork               = google_compute_subnetwork.subnetwork.self_link
+  subnetwork               = google_compute_subnetwork.prod_subnet.self_link
   # logging_service          = "logging.googleapis.com/kubernetes"
   # monitoring_service       = "monitoring.googleapis.com/kubernetes"
   networking_mode = "VPC_NATIVE"
@@ -30,14 +30,14 @@ resource "google_container_cluster" "prod" {
   }
 
   ip_allocation_policy {
-    cluster_secondary_range_name  = "k8s-pod-range"
-    services_secondary_range_name = "k8s-service-range"
+    cluster_secondary_range_name  = "prod-pod-range"
+    services_secondary_range_name = "prod-service-range"
   }
 
   private_cluster_config {
     enable_private_nodes    = false
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = "30.16.0.0/28"
+    master_ipv4_cidr_block  = "40.16.0.0/28"
   }
 }
 
@@ -64,6 +64,8 @@ resource "google_container_node_pool" "prod" {
   node_config {
     preemptible  = false
     machine_type = "e2-medium"
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
 
     labels = {
       role = "prod"
