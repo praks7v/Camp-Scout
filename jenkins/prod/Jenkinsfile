@@ -45,7 +45,7 @@ pipeline {
                                                    
                     // Deploy Kubernetes manifests using kubectl
                     sh '''
-                    kubectl apply -f Manifests/ --namespace=prod
+                    kubectl apply -f Manifests/prod-deployments.yml --namespace=prod
                     sleep 60
                     '''
                 }
