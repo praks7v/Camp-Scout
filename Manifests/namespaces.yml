@@ -1,0 +1,12 @@
+---
+# Namespace for Development
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+# Namespace for Production
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod

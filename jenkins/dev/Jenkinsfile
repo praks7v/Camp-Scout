@@ -1,0 +1,122 @@
+pipeline {
+  agent any
+  tools {
+    nodejs 'node22'
+  }
+  environment {
+    SCANNER_HOME = tool 'sonar-scanner'
+
+    PROJECT_ID = 'praks-dev'
+    CLUSTER_NAME = 'dev-cluster'
+    CLUSTER_ZONE = 'asia-south1-a'
+    GOOGLE_APPLICATION_CREDENTIALS = credentials('jenkins-sa-key')  // Service account key file
+    KUBE_CONFIG = 'kubeconfig'
+  }
+
+  stages {
+    stage('Git Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/praks7v/yelp-camp.git'
+      }
+    }
+    stage('Install Package Dependencies') {
+      steps {
+        sh "npm install"
+      }
+    }
+    stage('Unit Tests') {
+      steps {
+        sh "npm test"
+      }
+    }
+
+    stage('Trivy FS Scan') {
+      steps {
+        sh "trivy fs --format table -o fs-report.html ."
+      }
+    }
+
+    stage('SonarQube') {
+      steps {
+        withSonarQubeEnv('sonar') {
+          sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=YelpCamp -Dsonar.projectKey=YelpCamp"
+        }
+      }
+    }
+
+    stage('Docker Build & Tag') {
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker-cred',
+            toolName: 'docker') {
+            sh "docker build -t praks007/yelpcamp:latest ."
+          }
+        }
+      }
+    }
+
+    stage('Trivy Image Scan') {
+      steps {
+        sh "trivy image --format table -o fs-report.html praks007/yelpcamp:latest" 
+      }
+    }
+
+    stage('Docker Push Image') {
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker-cred',
+            toolName: 'docker') {
+            sh "docker push praks007/yelpcamp:latest"
+          }
+        }
+      }
+    }
+
+    stage('Authenticate with GCP') {
+        steps {
+          script {
+            // Authenticate with Google Cloud
+            sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
+          }
+        }
+    }
+
+    stage('Get GKE Credentials') {
+        steps {
+            script {
+                // Fetch credentials to interact with GKE cluster
+                sh '''
+                gcloud container clusters get-credentials ${CLUSTER_NAME} \
+                  --zone ${CLUSTER_ZONE} \
+                  --project ${PROJECT_ID}
+                '''
+            }
+        }
+    }
+
+    stage('Deploy to GKE') {
+        steps {
+            script {
+                                                
+                // Deploy Kubernetes manifests using kubectl
+                sh '''
+                kubectl apply -f Manifests/ --namespace=dev
+                sleep 60
+                '''
+            }
+        }
+    }
+
+    stage('Verify Deployment') {
+        steps {
+            script {
+                // Verify that the deployment is successful
+                sh '''
+                kubectl get pods --namespace=dev
+                kubectl get svc --namespace=dev
+                '''
+            }
+        }
+    }
+  }
+}
