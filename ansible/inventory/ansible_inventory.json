@@ -5,7 +5,7 @@
                 "ansible_host": "34.100.239.110"
             },
             "sonarqube-vm": {
-                "ansible_host": "35.200.229.122"
+                "ansible_host": "35.244.22.71"
             }
         }
     }

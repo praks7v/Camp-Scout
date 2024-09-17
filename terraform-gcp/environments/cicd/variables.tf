@@ -21,16 +21,6 @@ variable "region" {
   description = "region where resources will be created."
 }
 
-variable "zones" {
-  type        = list(string)
-  description = "list of zones available in that region."
-}
-
-variable "public_subnet_prefix" {
-  type        = string
-  description = "Public subnet name prefix"
-}
-
 variable "ssh_user" {
   type        = string
   description = "ssh user name"

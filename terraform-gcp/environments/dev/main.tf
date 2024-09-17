@@ -36,7 +36,7 @@ module "firewall" {
 
   ingress_rules = [
     {
-      name          = "allow-ssh-cluser"
+      name          = "allow-ssh-dev-cluser"
       description   = "Allow SSH from anywhere"
       priority      = 1001
       source_ranges = ["0.0.0.0/0"]

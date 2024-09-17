@@ -9,26 +9,6 @@ module "network" {
   mtu                     = 1460
 }
 
-# VPC Subnet
-resource "google_compute_subnetwork" "dev_subnet" {
-  project       = var.project_id
-  name          = "gke-dev-subnet"
-  ip_cidr_range = "30.0.0.0/16"
-  region        = var.region
-  network       = module.network.network_name
-
-  private_ip_google_access = false
-
-  secondary_ip_range {
-    range_name    = "dev-pod-range"
-    ip_cidr_range = "30.2.0.0/16"
-  }
-  secondary_ip_range {
-    range_name    = "dev-service-range"
-    ip_cidr_range = "30.4.0.0/20"
-  }
-}
-
 resource "google_compute_subnetwork" "prod_subnet" {
   project       = var.project_id
   name          = "gke-prod-subnet"
@@ -55,7 +35,7 @@ module "firewall" {
 
   ingress_rules = [
     {
-      name          = "allow-ssh-cluser"
+      name          = "allow-ssh-prod-cluser"
       description   = "Allow SSH from anywhere"
       priority      = 1000
       source_ranges = ["0.0.0.0/0"]

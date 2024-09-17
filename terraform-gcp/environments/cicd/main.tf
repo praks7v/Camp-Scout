@@ -12,7 +12,7 @@ module "network" {
 # VPC Subnet
 resource "google_compute_subnetwork" "subnetwork" {
   project       = var.project_id
-  name          = "dev-public-subnet"
+  name          = "cicd-public-subnet"
   ip_cidr_range = "10.2.0.0/16"
   region        = var.region
   network       = module.network.network_name
@@ -26,7 +26,7 @@ module "firewall" {
 
   ingress_rules = [
     {
-      name          = "allow-ssh-dev"
+      name          = "allow-ssh-cicd"
       description   = "Allow SSH from anywhere"
       priority      = 1000
       source_ranges = ["0.0.0.0/0"]
@@ -72,19 +72,7 @@ module "firewall" {
           ports    = ["9000"]
         }
       ]
-    },
-    {
-      name          = "allow-nodejs"
-      description   = "Allow nodejs from anywhere"
-      priority      = 1004
-      source_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["3000"]
-        }
-      ]
-    },
+    }
   ]
 
   egress_rules = [
@@ -123,7 +111,7 @@ resource "google_compute_instance" "vm_instances" {
   }
 
   labels = {
-    env = "dev"
+    env = "cicd"
   }
 
   metadata = {
