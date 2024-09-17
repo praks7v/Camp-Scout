@@ -1,5 +1,4 @@
 project_id   = "praks-dev"
-network_name = "gke-network"
+network_name = "gke-prod-vpc"
 region       = "asia-south1"
-dev_zone     = "asia-south1-c"
-prod_zone    = "asia-south1-b"
+zone         = "asia-south1-b"

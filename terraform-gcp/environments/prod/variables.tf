@@ -17,12 +17,7 @@ variable "machine_type" {
   default     = "e2-medium"
 }
 
-variable "dev_zone" {
-  type        = string
-  description = "The name of the dev zone"
-}
-
-variable "prod_zone" {
+variable "zone" {
   type        = string
   description = "The name of the prod zone"
 }

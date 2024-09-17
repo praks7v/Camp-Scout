@@ -10,15 +10,25 @@ module "network" {
 }
 
 # VPC Subnet
-resource "google_compute_subnetwork" "subnetwork" {
+resource "google_compute_subnetwork" "dev_subnet" {
   project       = var.project_id
-  name          = "dev-public-subnet"
-  ip_cidr_range = "10.2.0.0/16"
+  name          = "gke-dev-subnet"
+  ip_cidr_range = "30.0.0.0/16"
   region        = var.region
   network       = module.network.network_name
+
+  private_ip_google_access = false
+
+  secondary_ip_range {
+    range_name    = "dev-pod-range"
+    ip_cidr_range = "30.2.0.0/16"
+  }
+  secondary_ip_range {
+    range_name    = "dev-service-range"
+    ip_cidr_range = "30.4.0.0/20"
+  }
 }
 
-# Firewall
 module "firewall" {
   source       = "../../modules/firewall"
   project_id   = var.project_id
@@ -26,9 +36,9 @@ module "firewall" {
 
   ingress_rules = [
     {
-      name          = "allow-ssh-dev"
+      name          = "allow-ssh-cluser"
       description   = "Allow SSH from anywhere"
-      priority      = 1000
+      priority      = 1001
       source_ranges = ["0.0.0.0/0"]
       allow = [
         {
@@ -36,135 +46,6 @@ module "firewall" {
           ports    = ["22"]
         }
       ]
-    },
-    {
-      name          = "allow-http"
-      description   = "Allow HTTP from anywhere"
-      priority      = 1001
-      source_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["80"]
-        }
-      ]
-    },
-    {
-      name          = "allow-jenkins"
-      description   = "Allow HTTP from anywhere"
-      priority      = 1002
-      source_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["8080"]
-        }
-      ]
-    },
-    {
-      name          = "allow-sonarqube"
-      description   = "Allow HTTP from anywhere"
-      priority      = 1003
-      source_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["9000"]
-        }
-      ]
-    },
-    {
-      name          = "allow-nodejs"
-      description   = "Allow nodejs from anywhere"
-      priority      = 1004
-      source_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["3000"]
-        }
-      ]
-    },
-  ]
-
-  egress_rules = [
-    {
-      name               = "allow-all-egress"
-      description        = "Allow all egress traffic"
-      priority           = 1010
-      destination_ranges = ["0.0.0.0/0"]
-      allow = [
-        {
-          protocol = "all"
-        }
-      ]
     }
   ]
 }
-
-# VM Creation
-resource "google_compute_instance" "vm_instances" {
-  project      = var.project_id
-  count        = length(var.vm_instances)
-  name         = var.vm_instances[count.index].name
-  machine_type = var.vm_instances[count.index].machine_type
-  zone         = var.vm_instances[count.index].zone
-
-  boot_disk {
-    auto_delete = true
-
-    initialize_params {
-      image = var.instance_image
-      size  = var.vm_instances[count.index].disk_size
-      type  = "pd-balanced"
-    }
-
-    mode = "READ_WRITE"
-  }
-
-  labels = {
-    env = "dev"
-  }
-
-  metadata = {
-    ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key)}"
-  }
-
-  network_interface {
-    access_config {
-      network_tier = "PREMIUM"
-    }
-
-    queue_count = 0
-    stack_type  = "IPV4_ONLY"
-    subnetwork  = google_compute_subnetwork.subnetwork.id
-  }
-}
-
-resource "google_service_account" "jenkins_sa" {
-  project    = var.project_id
-  account_id = "jenkins-sa"
-}
-
-resource "google_project_iam_binding" "gke_admin" {
-  project = var.project_id
-  role    = "roles/container.clusterAdmin"
-  members = [
-    "serviceAccount:${google_service_account.jenkins_sa.email}"
-  ]
-}
-
-resource "google_project_iam_binding" "gke_cluster_developer" {
-  project = var.project_id
-  role    = "roles/container.developer"
-  members = [
-    "serviceAccount:${google_service_account.jenkins_sa.email}"
-  ]
-}
-
-resource "google_project_iam_member" "jenkins_sa" {
-  project = var.project_id
-  role    = "roles/compute.admin"
-  member  = "serviceAccount:${google_service_account.jenkins_sa.email}"
-}
-

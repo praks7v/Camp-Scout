@@ -48,40 +48,6 @@ resource "google_compute_subnetwork" "prod_subnet" {
   }
 }
 
-# resource "google_compute_router" "router" {
-#   project = var.project_id
-#   name    = "router"
-#   region  = var.region
-#   network = module.network.network_name
-# }
-
-# resource "google_compute_router_nat" "nat_gw" {
-#   name    = "nat-gw"
-#   project = var.project_id
-#   router  = google_compute_router.router.name
-#   region  = var.region
-
-#   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-#   nat_ip_allocate_option             = "MANUAL_ONLY"
-
-#   subnetwork {
-#     name                    = google_compute_subnetwork.subnetwork.id
-#     source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
-#   }
-
-#   nat_ips = [google_compute_address.nat_ip.self_link]
-# }
-
-# resource "google_compute_address" "nat_ip" {
-#   name         = "nat-ip"
-#   project      = var.project_id
-#   region       = var.region
-#   address_type = "EXTERNAL"
-#   network_tier = "PREMIUM"
-
-# }
-
-
 module "firewall" {
   source       = "../../modules/firewall"
   project_id   = var.project_id

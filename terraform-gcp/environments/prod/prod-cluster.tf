@@ -2,7 +2,7 @@
 resource "google_container_cluster" "prod" {
   name                     = "prod-cluster"
   project                  = var.project_id
-  location                 = var.prod_zone
+  location                 = var.zone
   remove_default_node_pool = true
   deletion_protection      = false
   initial_node_count       = 1
