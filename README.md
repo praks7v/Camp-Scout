@@ -28,8 +28,19 @@ After configuring the .env file, you can start the project by running:
 ```sh
 docker compose up
 ```
-## [GCP Infrastructure Setup](https://github.com/praks7v/Camp-Scout/tree/gcp-infra)
+---
+## Overview of GCP Infrastructure Setup using Terraform, Ansible, and Jenkins
 
+The **Camp-Scout** application uses Google Cloud Platform (GCP) to host its infrastructure, including:
+
+- **Google Kubernetes Engine (GKE)**: To manage the application's containerized services.
+- **Google Cloud Storage**: For storing Terraform state.
+- **Google IAM**: For managing access control.
+- **VPCs and Subnets**: For secure networking.
+
+To see the full infrastructure setup instructions, including the Terraform configurations and CI/CD pipeline, please refer to the [detailed GCP infrastructure guide](https://github.com/praks7v/Camp-Scout/tree/gcp-infra) in the `gcp-infra` branch.
+
+---
 ## Application Screenshots
 ![](./images/home.jpg)
 ![](./images/campgrounds.jpg)
