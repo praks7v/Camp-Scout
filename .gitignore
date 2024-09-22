@@ -13,3 +13,5 @@ ansible_inventory.json
 env_variables.txt
 .env
 commands_run.txt
+yelp_camp_setup.md
+
