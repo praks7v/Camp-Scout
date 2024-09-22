@@ -83,20 +83,59 @@ gcloud storage buckets create gs://YOUR_BUCKET_NAME --location=REGION
 gcloud storage buckets update gs://YOUR_BUCKET_NAME --versioning
 ```
 ### Service Account Creation
-Create a Terraform service account by running the script:
 
-Add your Project ID and Service account name:
-```bash
-PROJECT_ID="shopvory-ecommerce"
-SERVICE_ACCOUNT_NAME="tf-svc-account"
-```
-```bash
-chmod +x scripts/create_tf_svc_account.sh
-./scripts/create_tf_svc_account.sh
-```
-Ensure that you edit the script with the required details before running.
+To manage infrastructure with Terraform, you'll need to create a dedicated service account in GCP. You can either create the service account by running a script or manually through the Google Cloud Console.
 
-or you can create manually based on roles and permissions.
+#### Option 1: Create a Service Account using a Script
+
+Follow these steps to create a Terraform service account via the provided script:
+
+1. Set your GCP project ID and service account name as environment variables:
+
+    ```bash
+    PROJECT_ID="shopvory-ecommerce"
+    SERVICE_ACCOUNT_NAME="tf-svc-account"
+    ```
+
+2. Ensure the script has executable permissions:
+
+    ```bash
+    chmod +x scripts/create_tf_svc_account.sh
+    ```
+
+3. Run the script to create the service account:
+
+    ```bash
+    ./scripts/create_tf_svc_account.sh
+    ```
+
+> **Note:** Before running the script, make sure to edit it with the correct roles, permissions, and project-specific details as necessary.
+
+#### Option 2: Manual Creation via the GCP Console
+
+Alternatively, you can manually create a service account through the Google Cloud Console or the `gcloud` CLI by following these steps:
+
+1. Create the service account:
+
+    ```bash
+    gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME \
+      --display-name="Terraform Service Account"
+    ```
+
+2. Assign the required roles and permissions to the service account. For example, to grant the `roles/editor` role:
+
+    ```bash
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+      --role="roles/editor"
+    ```
+
+3. (Optional) If you want to use more fine-grained permissions, assign specific roles as needed based on the scope of the infrastructure your Terraform configuration will manage.
+
+> For more details on available roles, refer to the [Google Cloud IAM Documentation](https://cloud.google.com/iam/docs/understanding-roles).
+
+---
+
 
 
 
