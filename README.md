@@ -208,42 +208,43 @@ Add Credentials in Jenkins
 
 Create a Pipeline in Jenkins
 
-Click on "New Item" in the Jenkins dashboard.
+- Click on "New Item" in the Jenkins dashboard.
 
-Enter a name for your pipeline (e.g., MyProjectPipeline).
+- Enter a name for your pipeline (e.g., MyProjectPipeline).
 
-Select "Pipeline" and click "OK".
+- Select "Pipeline" and click "OK".
 
 In the configuration screen:
 
-Scroll down to Pipeline section.
-Under Definition, select "Pipeline script from SCM".
-Under SCM, select "Git".
-Enter the repository URL of your project (e.g., from GitHub or GitLab).
-If required, add credentials for accessing the repository.
-In the Script Path, enter Jenkinsfile (if it's located in the root of your repository).
-Add secrets for Webhooks.
-Save the configuration.
+- Scroll down to Pipeline section.
+- Under Definition, select "Pipeline script from SCM".
+- Under SCM, select "Git".
+- Enter the repository URL of your project (e.g., from GitHub or GitLab).
+- If required, add credentials for accessing the repository.
+- In the Script Path, enter Jenkinsfile (if it's located in the root of your repository).
+- Add secrets for Webhooks.
+- Save the configuration.
 
 Configure Webhooks (GitHub Example)
 
 GitHub Webhook Configuration
+
 To trigger the pipeline automatically when changes are pushed to the repository, set up a webhook in GitHub:
 
-Go to your GitHub repository.
+- Go to your GitHub repository.
 
-Click on "Settings" > "Webhooks" > "Add webhook".
+- Click on "Settings" > "Webhooks" > "Add webhook".
 
-In the Payload URL field, enter your Jenkins server URL followed by /github-webhook/, for example:
+- In the Payload URL field, enter your Jenkins server URL followed by /github-webhook/, for example:
 
 ```text
 http://your-jenkins-url/github-webhook/
 ```
-Set the Content type to application/json.
+- Set the Content type to application/json.
 
-Choose the trigger events for the webhook. To trigger builds on every push, select "Just the push event".
+- Choose the trigger events for the webhook. To trigger builds on every push, select "Just the push event".
 
-Click "Add webhook".
+- Click "Add webhook".
 
 Run the Pipeline
 - Run the Jenkins pipeline.
