@@ -1,2 +1,0 @@
----
-docker_architecture: "{{ ansible_architecture | lower }}"

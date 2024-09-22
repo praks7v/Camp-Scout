@@ -1,14 +1,3 @@
-# Terraform files
-*.tfstate
-*.tfstate.*
-.terraform/
-
-# Ansible output files
-terraform_output.json
-ansible_inventory.json
-
-# SSH keys
-*.pem
-env_variables.txt
+# env file
 .env
-commands_run.txt
+
