@@ -8,7 +8,8 @@ Ensure that the following tools are installed:
 - [Terraform](https://www.terraform.io/downloads)
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 - [Jenkins](https://www.jenkins.io/download/)
-
+  
+---
 ## Step 01: Google Cloud Setup
 
 ### Install Google Cloud SDK
@@ -28,36 +29,41 @@ In certain environments (like headless servers), you can use the following comma
 ```bash
 gcloud auth application-default login --no-launch-browser
 ```
-### Billing and Project Setup
-List billing accounts:
+## Billing and Project Setup
+1. List your existing billing accounts:
+This will list all billing accounts you can use with GCP:
 
 ```bash
 gcloud beta billing accounts list
 ```
-Create a new project:
+2. Create a new project:
+Replace `<PROJECT_ID>` and `<PROJECT_NAME>` with your desired values. For example:
 
 ```bash
 gcloud projects create <PROJECT_ID> --name="<PROJECT_NAME>"
+# Example:
+gcloud projects create shopvory-ecommerce --name="Shopvory"
 ```
-example:
-```bash
-gcloud projects create shopvory-ecommerce --name=shopvory
-```
-Link the project to a billing account:
+3. Link the project to a billing account:
+Replace `<ACCOUNT_ID>` with your billing account ID:
 
 ```bash
 gcloud beta billing projects link <PROJECT_ID> --billing-account=<ACCOUNT_ID>
 ```
-Set the project as the default:
+4. Set the project as the default project:
+Configure your environment to use this project as the default:
 
 ```bash
 gcloud config set project <PROJECT_ID>
 ```
-Verify the project configuration:
+5. Verify the project setup:
+To check that the project has been set correctly, run:
 
 ```bash
 gcloud config get-value project
+# Expected output: shopvory-ecommerce
 ```
+
 ### Enable Required APIs
 Enable the necessary Google Cloud services:
 
@@ -134,6 +140,7 @@ Alternatively, you can manually create a service account through the Google Clou
 
 > For more details on available roles, refer to the [Google Cloud IAM Documentation](https://cloud.google.com/iam/docs/understanding-roles).
 
+---
 ## Step 02: Terraform & Ansible Setup
 Install Terraform
 Run the following script to install Terraform:
@@ -180,13 +187,14 @@ chmod +x create_gke_infra.sh
 ./create_gke_infra.sh &
 ```
 
+---
 ## Step 03: Jenkins Setup
 
-Initial Jenkins Configuration
-- Install Jenkins and configure default plugins.
-- Login and configure Jenkins.
+### Initial Jenkins Configuration
+1. Install Jenkins and configure default plugins.
+2. Login to Jenkins and configure it as needed.
 
-Install Jenkins Plugins
+### Install Jenkins Plugins
 Install the following Jenkins plugins:
 - Docker
 - Kubernetes
@@ -195,61 +203,46 @@ Install the following Jenkins plugins:
 - SonarQube
 - Nodejs
   
-Configure Jenkins Tools
+### Configure Jenkins Tools
 - Docker
 - NodeJS
 - SonarQube
   
-Add Credentials in Jenkins
-- Docker Hub credentials
-- Jenkins service account JSON key
-- GitHub credentials
-- SonarQube credentials
+### Add Credentials in Jenkins
+- **Docker Hub credentials**: Store your Docker Hub credentials to allow Jenkins to push/pull images.
+- **Jenkins service account JSON key**: Add the GCP service account key to interact with GCP resources.
+- **GitHub credentials**: Store GitHub credentials for source control access.
+- **SonarQube credentials**: Add credentials to allow Jenkins to communicate with SonarQube.
+- 
+### Create a Pipeline in Jenkins
+1. In Jenkins, click New Item.
+2. Enter a name for the pipeline (e.g., MyProjectPipeline).
+3. Select Pipeline and click OK.
+4. In the Pipeline section:
+    - Under Definition, select "Pipeline script from SCM".
+    - Select Git as the SCM.
+    - Enter the repository URL.
+    - Add any required credentials for the repository.
+    - Set the Script Path to Jenkinsfile (if it’s located in the root of the repository).
+5. Save the pipeline configuration.
 
-Create a Pipeline in Jenkins
+### Configure Webhooks
+To trigger the pipeline automatically on GitHub events:
 
-- Click on "New Item" in the Jenkins dashboard.
+1. In your GitHub repository, go to Settings > Webhooks > Add webhook.
 
-- Enter a name for your pipeline (e.g., MyProjectPipeline).
-
-- Select "Pipeline" and click "OK".
-
-In the configuration screen:
-
-- Scroll down to Pipeline section.
-- Under Definition, select "Pipeline script from SCM".
-- Under SCM, select "Git".
-- Enter the repository URL of your project (e.g., from GitHub or GitLab).
-- If required, add credentials for accessing the repository.
-- In the Script Path, enter Jenkinsfile (if it's located in the root of your repository).
-- Add secrets for Webhooks.
-- Save the configuration.
-
-Configure Webhooks (GitHub Example)
-
-GitHub Webhook Configuration
-
-To trigger the pipeline automatically when changes are pushed to the repository, set up a webhook in GitHub:
-
-- Go to your GitHub repository.
-
-- Click on "Settings" > "Webhooks" > "Add webhook".
-
-- In the Payload URL field, enter your Jenkins server URL followed by /github-webhook/, for example:
+2. Set the Payload URL to your Jenkins URL, followed by `/github-webhook/`:
 
 ```text
 http://your-jenkins-url/github-webhook/
 ```
-- Set the Content type to application/json.
+3. Set the Content type to `application/json`.
 
-- Choose the trigger events for the webhook. To trigger builds on every push, select "Just the push event".
+4. Select the events to trigger the webhook (e.g., "Just the push event").
 
-- Click "Add webhook".
+5. Click Add webhook.
 
-Run the Pipeline
-- Run the Jenkins pipeline.
-- Trigger the pipeline using a webhook.
-
+---
 ## Step 04: Destroying the Infrastructure
 Cleanup CI/CD and GKE Infrastructure
 Run the following scripts to destroy the infrastructure:
@@ -274,7 +267,7 @@ Finally, delete the GCP project:
 ```bash
 gcloud projects delete <PROJECT_ID>
 ```
-
+---
 Conclusion
 This guide helps you to quickly set up GCP infrastructure, CI/CD pipelines using Jenkins, and manage resources using Terraform and Ansible. Follow the cleanup steps to tear down the environment when it is no longer needed.
 
