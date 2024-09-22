@@ -148,6 +148,17 @@ Generate SSH keys for Ansible:
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/ansible_ed25519 -C ansible
 ```
+
+Ansible Configuration
+
+Add the following configuration to your Ansible settings (e.g., in `ansible.cfg`):
+
+```ini
+[defaults]
+inventory = inventory/ansible_inventory.json
+remote_user = ansible
+private_key_file = /home/dev/.ssh/ansible_ed25519
+```
 Create GCP Infrastructure with Terraform
 
 Run the Scripts to Create Infrastructure
