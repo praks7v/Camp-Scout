@@ -134,7 +134,63 @@ Alternatively, you can manually create a service account through the Google Clou
 
 > For more details on available roles, refer to the [Google Cloud IAM Documentation](https://cloud.google.com/iam/docs/understanding-roles).
 
----
+## Step 02: Terraform & Ansible Setup
+Install Terraform
+Run the following script to install Terraform:
+
+```bash
+chmod +x scripts/install_terraform.sh
+./scripts/install_terraform.sh
+```
+SSH Key Generation for Ansible
+Generate SSH keys for Ansible:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/ansible_ed25519 -C ansible
+```
+Create GCP Infrastructure with Terraform
+Make the infrastructure scripts executable:
+
+```bash
+cd scripts
+chmod +x create_cicd_infra.sh
+```
+Run the scripts to create the CI/CD infrastructure:
+
+```bash
+./create_cicd_infra.sh
+./create_gke_infra.sh &
+```
+
+## Step 03: Jenkins Setup
+
+Initial Jenkins Configuration
+- Install Jenkins and configure default plugins.
+- Login and configure Jenkins.
+
+Install Jenkins Plugins
+Install the following Jenkins plugins:
+- Docker
+- Kubernetes
+- Kubernetes CLI
+- Multibranch Pipeline Webhook
+- SonarQube
+- Nodejs
+  
+Configure Jenkins Tools
+- Docker
+- NodeJS
+- SonarQube
+  
+Add Credentials in Jenkins
+- Docker Hub credentials
+- Jenkins service account JSON key
+- GitHub credentials
+- SonarQube credentials
+  
+Run the Pipeline
+- Run the Jenkins pipeline.
+- Trigger the pipeline using a webhook.
 
 
 
