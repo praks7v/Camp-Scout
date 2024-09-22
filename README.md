@@ -28,6 +28,7 @@ After configuring the .env file, you can start the project by running:
 ```sh
 docker compose up
 ```
+[GCP Infrastructure Setup](https://github.com/praks7v/Camp-Scout/tree/gcp-infra)
 
 ## Application Screenshots
 ![](./images/home.jpg)
