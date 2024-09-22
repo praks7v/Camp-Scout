@@ -149,16 +149,23 @@ Generate SSH keys for Ansible:
 ssh-keygen -t ed25519 -f ~/.ssh/ansible_ed25519 -C ansible
 ```
 Create GCP Infrastructure with Terraform
-Make the infrastructure scripts executable:
+
+Run the Scripts to Create Infrastructure
+
+1. Create CI/CD Infrastructure
+
+To set up the CI/CD infrastructure, run the following script:
 
 ```bash
 cd scripts
 chmod +x create_cicd_infra.sh
+./create_cicd_infra.sh
 ```
-Run the scripts to create the CI/CD infrastructure:
+2. Create GKE Infrastructure
+To create the GKE (Google Kubernetes Engine) infrastructure, run the following script in the background:
 
 ```bash
-./create_cicd_infra.sh
+chmod +x create_gke_infra.sh
 ./create_gke_infra.sh &
 ```
 
