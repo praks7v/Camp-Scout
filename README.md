@@ -210,6 +210,32 @@ Run the Pipeline
 - Run the Jenkins pipeline.
 - Trigger the pipeline using a webhook.
 
+## Step 04: Destroying the Infrastructure
+Cleanup CI/CD and GKE Infrastructure
+Run the following scripts to destroy the infrastructure:
 
+```bash
+cd scripts
+chmod +x destroy_cicd_infra.sh
+ ./destroy_cicd_infra.sh
+chmod +x destroy_gke_infra.sh
+./destroy_gke_infra.sh
+```
+Delete the GCP Storage Bucket
+Delete the Terraform state bucket and its contents:
+
+```bash
+gcloud storage rm -r gs://<BUCKET_NAME>
+gcloud storage buckets delete gs://<BUCKET_NAME>
+```
+Delete the GCP Project
+Finally, delete the GCP project:
+
+```bash
+gcloud projects delete <PROJECT_ID>
+```
+
+Conclusion
+This guide helps you to quickly set up GCP infrastructure, CI/CD pipelines using Jenkins, and manage resources using Terraform and Ansible. Follow the cleanup steps to tear down the environment when it is no longer needed.
 
 
