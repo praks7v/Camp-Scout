@@ -1,0 +1,15 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.*
+
+# Ansible output files
+terraform_output.json
+ansible_inventory.json
+
+# SSH keys
+*.pem
+env_variables.txt
+.env
+commands_run.txt
