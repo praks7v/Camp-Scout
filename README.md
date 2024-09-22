@@ -84,6 +84,7 @@ gcloud storage buckets update gs://YOUR_BUCKET_NAME --versioning
 ```
 ### Service Account Creation
 Create a Terraform service account by running the script:
+
 Add your Project ID and Service account name:
 ```bash
 PROJECT_ID="shopvory-ecommerce"
@@ -94,6 +95,7 @@ chmod +x scripts/create_tf_svc_account.sh
 ./scripts/create_tf_svc_account.sh
 ```
 Ensure that you edit the script with the required details before running.
+
 or you can create manually based on roles and permissions.
 
 
