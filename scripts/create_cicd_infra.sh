@@ -27,10 +27,10 @@ echo "Generating inventory..."
 ./inventory/terraform_inventory.py
 
 echo "Making add_known_hosts.sh executable..."
-chmod +x ../scripts/add_known_hosts.sh
+chmod +x add_known_hosts.sh
 
 echo "Adding known hosts..."
-./../scripts/add_known_hosts.sh
+./add_known_hosts.sh
 
 echo "Waiting for 10 seconds before running Ansible playbook..."
 sleep 10
