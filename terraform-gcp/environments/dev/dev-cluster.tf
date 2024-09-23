@@ -8,8 +8,8 @@ resource "google_container_cluster" "dev" {
   initial_node_count       = 1
   network                  = module.network.network_name
   subnetwork               = google_compute_subnetwork.dev_subnet.self_link
-  # logging_service          = "logging.googleapis.com/kubernetes"
-  # monitoring_service       = "monitoring.googleapis.com/kubernetes"
+  logging_service          = "logging.googleapis.com/kubernetes"
+  monitoring_service       = "monitoring.googleapis.com/kubernetes"
   networking_mode = "VPC_NATIVE"
 
   addons_config {
@@ -79,16 +79,3 @@ resource "google_container_node_pool" "dev" {
     ]
   }
 }
-
-# Service Account
-resource "google_service_account" "dev_sa" {
-  account_id = "dev-sa"
-  project    = var.project_id
-}
-
-# resource "google_service_account_iam_member" "dev_sa" {
-#   service_account_id = google_service_account.dev_sa.id
-#   role               = "roles/iam.workloadIdentityUser"
-#   member             = "serviceAccount:${var.project_id}.svc.id.goog[dev/dev_sa]"
-# }
-
