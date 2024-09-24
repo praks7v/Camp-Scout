@@ -325,6 +325,10 @@ Finally, delete the GCP project:
 gcloud projects delete <PROJECT_ID>
 ```
 ---
+## CI/CD Pipeline
+![CI/CD Pipeline ](images/ci_cd_pipeline.png)
+
+---
 ## Conclusion
 This guide helps you to quickly set up GCP infrastructure, CI/CD pipelines using Jenkins, and manage resources using Terraform and Ansible. Follow the cleanup steps to tear down the environment when it is no longer needed.
 
