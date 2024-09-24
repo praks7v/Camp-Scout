@@ -326,7 +326,7 @@ gcloud projects delete <PROJECT_ID>
 ```
 ---
 ## CI/CD Pipeline
-![CI/CD Pipeline ](images/ci_cd_pipeline.png)
+![CI/CD Pipeline ](images/ci_cd_pipeline_v1.png)
 
 ---
 ## Conclusion
