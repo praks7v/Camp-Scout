@@ -17,6 +17,32 @@ pipeline {
             }
         }
 
+        stage('Docker Pull & Tag') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker pull praks007/camp-scout-dev:latest && docker tag praks007/camp-scout-dev:latest praks007/camp-scout-prod:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-is-report.json praks007/camp-scout-prod:latest" 
+            }
+        }
+
+        stage('Docker Push Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker push praks007/camp-scout-prod:latest"
+                    }
+                }
+            }
+        }
+
         stage('Authenticate with GCP') {
             steps {
                 script {

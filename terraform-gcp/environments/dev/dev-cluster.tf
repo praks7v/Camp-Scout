@@ -59,8 +59,8 @@ resource "google_container_node_pool" "dev" {
     auto_upgrade = true
   }
   autoscaling {
-    min_node_count = 1
-    max_node_count = 3
+    min_node_count = 3
+    max_node_count = 6
   }
 
   node_config {
