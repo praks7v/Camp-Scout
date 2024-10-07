@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camp-scout-deployment
+  namespace: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camp-scout
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: camp-scout
+        version: blue
+    spec:
+      serviceAccountName: prod-sa
+      containers:
+        - name: camp-scout-container
+          image: praks007/camp-scout-prod:blue
+          ports:
+            - containerPort: 3000
+          env:
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: CLOUDINARY_CLOUD_NAME
+            - name: CLOUDINARY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: CLOUDINARY_KEY
+            - name: CLOUDINARY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: CLOUDINARY_SECRET
+            - name: MAPBOX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: MAPBOX_TOKEN
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: DB_URL
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: camp-scout-secrets
+                  key: SECRET
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+      imagePullSecrets:
+        - name: docker-hub-secret
+
+---

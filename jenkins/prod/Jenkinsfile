@@ -1,12 +1,22 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'DEPLOY_ENV', choices: ['blue', 'green'], description: 'Choose which environment to deploy: Blue or Green')
+        choice(name: 'DOCKER_TAG', choices: ['blue', 'green'], description: 'Choose the Docker image tag for the deployment')
+        booleanParam(name: 'SWITCH_TRAFFIC', defaultValue: false, description: 'Switch traffic between Blue and Green')
+    }
+
     environment {
         PROJECT_ID = 'praks-dev'
         CLUSTER_NAME = 'prod-cluster'
         CLUSTER_ZONE = 'asia-south1-b'
         GOOGLE_APPLICATION_CREDENTIALS = credentials('jenkins-sa-key')  // Service account key file
         KUBE_CONFIG = 'kubeconfig'
+
+        IMAGE_NAME = "praks007/camp-scout-prod"
+        TAG = "${params.DOCKER_TAG}"  // The image tag now comes from the parameter
+        KUBE_NAMESPACE = 'prod'
     }
 
     stages {
@@ -21,7 +31,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker pull praks007/camp-scout-dev:latest && docker tag praks007/camp-scout-dev:latest praks007/camp-scout-prod:latest"
+                        sh "docker pull praks007/camp-scout-dev:latest && docker tag praks007/camp-scout-dev:latest praks007/camp-scout-prod:${TAG}"
                     }
                 }
             }
@@ -29,7 +39,7 @@ pipeline {
 
         stage('Trivy Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-is-report.json praks007/camp-scout-prod:latest" 
+                sh "trivy image --format table -o trivy-is-report.json ${IMAGE_NAME}:${TAG}" 
             }
         }
 
@@ -37,7 +47,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push praks007/camp-scout-prod:latest"
+                        sh "docker push ${IMAGE_NAME}:${TAG}"
                     }
                 }
             }
@@ -65,14 +75,35 @@ pipeline {
             }
         }
 
-        stage('Deploy to GKE') {
+        stage('Deploy Secret and Services') {
             steps {
                 script {
                                                    
                     // Deploy Kubernetes manifests using kubectl
                     sh '''
-                    kubectl apply -f Manifests/prod-deployments.yml --namespace=prod
+                    kubectl apply -f prod-namespace.yml --namespace=${KUBE_NAMESPACE}
+                    kubectl apply -f prod-secret.yml --namespace=${KUBE_NAMESPACE}
+                    kubectl apply -f prod-service-account.yml --namespace=${KUBE_NAMESPACE}
+                    kubectl apply -f prod-service.yml --namespace=${KUBE_NAMESPACE}
                     sleep 60
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    def deploymentFile = ""
+                    if (params.DEPLOY_ENV == 'blue') {
+                        deploymentFile = 'prod-deployments-blue.yml'
+                    } else {
+                        deploymentFile = 'prod-deployments-green.yml'
+                    }
+
+                    sh '''
+                    kubectl apply -f ${deploymentFile} -n ${KUBE_NAMESPACE}
+                    sleep 30
                     '''
                 }
             }
@@ -83,8 +114,8 @@ pipeline {
                 script {
                     // Verify that the deployment is successful
                     sh '''
-                    kubectl get pods --namespace=prod
-                    kubectl get svc --namespace=prod
+                    kubectl get pods --namespace=${KUBE_NAMESPACE}
+                    kubectl get svc --namespace=${KUBE_NAMESPACE}
                     '''
                 }
             }
