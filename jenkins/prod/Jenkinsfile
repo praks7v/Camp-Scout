@@ -132,7 +132,7 @@ pipeline {
 
                     // Always switch traffic based on DEPLOY_ENV
                     sh """
-                    kubectl patch service camp-scout-service -p "{\\"spec\\": {\\"selector\\": {\\"app\\": \\"bankapp\\", \\"version\\": \\"''' + newEnv + '''\\"}}}" -n ${KUBE_NAMESPACE}
+                    kubectl patch service camp-scout-service -p "{\\"spec\\": {\\"selector\\": {\\"app\\": \\"camp-scout\\", \\"version\\": \\"''' + newEnv + '''\\"}}}" -n ${KUBE_NAMESPACE}
                     """
                     echo "Traffic has been switched to the ${newEnv} environment."
                 }
