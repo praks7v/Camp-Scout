@@ -24,7 +24,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from source repository
-                git branch: 'master', url: 'https://github.com/praks7v/Camp-Scout.git'
+                git branch: 'gcp-infra', url: 'https://github.com/praks7v/Camp-Scout.git'
             }
         }
 
@@ -76,36 +76,48 @@ pipeline {
             }
         }
 
-        stage('Deploy Secret and Services') {
+        stage('Deploy Secret, Namespace and ServiceAccount') {
             steps {
                 script {
                                                    
                     // Deploy Kubernetes manifests using kubectl
                     sh '''
-                    kubectl apply -f prod-namespace.yml --namespace=${KUBE_NAMESPACE}
-                    kubectl apply -f prod-secret.yml --namespace=${KUBE_NAMESPACE}
-                    kubectl apply -f prod-service-account.yml --namespace=${KUBE_NAMESPACE}
-                    kubectl apply -f prod-service.yml --namespace=${KUBE_NAMESPACE}
-                    sleep 60
+                    kubectl apply -f Manifests/prod/prod-namespace.yml
+                    kubectl apply -f Manifests/prod/prod-secret.yml --namespace=${KUBE_NAMESPACE}
+                    kubectl apply -f Manifests/prod/prod-service-account.yml --namespace=${KUBE_NAMESPACE}
                     '''
                 }
             }
         }
-
+        
+        stage('Deploy SVC-APP') {
+            steps {
+                script {
+                    
+                    sh ''' 
+                    if ! kubectl get svc camp-scout-service -n ${KUBE_NAMESPACE}; then
+                        kubectl apply -f Manifests/prod/prod-service.yml -n ${KUBE_NAMESPACE}
+                    fi
+                    '''
+                }
+            }
+        }
+        
         stage('Deploy to Kubernetes') {
             steps {
                 script {
                     def deploymentFile = ""
                     if (params.DEPLOY_ENV == 'blue') {
-                        deploymentFile = 'prod-deployments-blue.yml'
+                        deploymentFile = 'Manifests/prod/prod-deployments-blue.yml'
                     } else {
-                        deploymentFile = 'prod-deployments-green.yml'
+                        deploymentFile = 'Manifests/prod/prod-deployments-green.yml'
                     }
-
-                    sh '''
-                    kubectl apply -f ${deploymentFile} -n ${KUBE_NAMESPACE}
+        
+                    // Apply the correct deployment file using proper string interpolation
+                    sh """
+                    kubectl apply -f ${deploymentFile} --namespace=${KUBE_NAMESPACE}
                     sleep 30
-                    '''
+                    """
                 }
             }
         }
@@ -119,9 +131,9 @@ pipeline {
                     def newEnv = params.DEPLOY_ENV
 
                     // Always switch traffic based on DEPLOY_ENV
-                    sh '''
+                    sh """
                     kubectl patch service camp-scout-service -p "{\\"spec\\": {\\"selector\\": {\\"app\\": \\"bankapp\\", \\"version\\": \\"''' + newEnv + '''\\"}}}" -n ${KUBE_NAMESPACE}
-                    '''
+                    """
                     echo "Traffic has been switched to the ${newEnv} environment."
                 }
             }
