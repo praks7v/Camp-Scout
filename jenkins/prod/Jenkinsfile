@@ -90,7 +90,7 @@ pipeline {
             }
         }
         
-        stage('Deploy SVC-APP') {
+        stage('Deploy Service Camp-Scout') {
             steps {
                 script {
                     
