@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: camp-scout-deployment
+  name: camp-scout-deployment-green
   namespace: prod
 spec:
   replicas: 1
